@@ -11,5 +11,5 @@ function comfortlaneSettings(): array
         'pixel_id' => '1063264713385866',               // Example: 123456789012345
         'paytm_mid' => 'lGaVdS11237189820758',              // Real Paytm merchant MID for verification
         'paytm_env' => 'production',    // production or test
-    ]
+    ];
 }
