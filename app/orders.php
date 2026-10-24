@@ -2,6 +2,11 @@
 require __DIR__ . '/includes/init.php';
 
 $order = $_SESSION['last_order'] ?? null;
+// Only the verified success route may expose the Purchase payload.
+$successRoute = in_array(basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')), ['thankyou.php', 'success.php'], true);
+$verifiedSuccess = $successRoute && is_array($order)
+    && ($order['payment_status'] ?? '') === 'Verified — SUCCESS'
+    && !empty($order['payment_verified_at']) && !empty($order['transaction_id']);
 $pageTitle = $order ? 'Thank you for your order — ComfyNest' : 'My orders — ComfyNest';
 $layout = 'back';
 $headerTitle = 'MY ORDERS';
@@ -81,6 +86,6 @@ require __DIR__ . '/includes/header.php';
     <section class="empty-state order-empty"><div class="empty-illustration"><span class="ui-icon icon-package" aria-hidden="true"></span><i>✦</i></div><small>NO ORDERS YET</small><h1>Your cosy history starts here.</h1><p>When you place an order, its confirmation, delivery date and tracking status will show up here.</p><a class="button primary" href="index.php#products">Start shopping</a></section>
 <?php endif; ?>
 
-<?php if ($order): ?><script>window.ComfyNestPurchase = <?= json_encode(orderTrackingPayload($order), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script><?php endif; ?>
+<?php if ($verifiedSuccess): ?><script>window.ComfyNestPurchase = <?= json_encode(orderTrackingPayload($order), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script><?php endif; ?>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

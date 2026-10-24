@@ -341,7 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.fbq = fbq;
         window._fbq = fbq;
         pixelIds.forEach(pixelId => fbq('init', pixelId));
-        fbq('track', 'PageView');
+        // Verified success pages send Purchase only; other pages send PageView only.
+        if (!purchase) fbq('track', 'PageView');
         return loadScript('https://connect.facebook.net/en_US/fbevents.js', 'comfynest-meta-pixel');
     };
 
@@ -368,19 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (window.gtag) {
             window.gtag('event', googleEvent, ecommerce);
         }
-        if (window.fbq) {
-            const contents = ecommerce.items.map((item) => ({ id: item.item_id, quantity: item.quantity, item_price: item.price }));
-            const metaPayload = {
-                content_ids: ecommerce.items.map((item) => item.item_id),
-                content_type: 'product',
-                contents,
-                value: ecommerce.value,
-                currency: ecommerce.currency,
-                num_items: ecommerce.items.reduce((total, item) => total + item.quantity, 0)
-            };
-            if (ecommerce.items.length === 1) metaPayload.content_name = ecommerce.items[0].item_name;
-            window.fbq('track', metaEvent, metaPayload);
-        }
+
     };
 
     const firePageCommerceEvent = () => {
@@ -411,10 +400,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const firePurchaseOnce = () => {
         if (!purchase || !purchase.transaction_id) return;
-        const storageKey = `comfynest_purchase_${purchase.transaction_id}`;
+        const storageKey = `comfynest_success_purchase_v2_${purchase.transaction_id}`;
         try {
             if (window.localStorage.getItem(storageKey)) return;
-            window.localStorage.setItem(storageKey, '1');
         } catch (error) { /* transaction_id still gives analytics providers a deduplication key */ }
 
         const googlePayload = {
@@ -448,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 content_type: 'product',
                 contents: googlePayload.items.map((item) => ({ id: item.item_id, quantity: item.quantity, item_price: item.price }))
             }, { eventID: googlePayload.transaction_id });
+            try { window.localStorage.setItem(storageKey, '1'); } catch (error) { /* storage may be unavailable */ }
         }
     };
 

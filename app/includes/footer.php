@@ -14,6 +14,6 @@
 <?php endif; ?>
 <iframe name="cart-background-target" data-cart-background-target hidden title="Cart update"></iframe>
 <div class="toast" role="status" aria-live="polite"></div>
-<script src="assets/js/app.js?v=20261023-gallery-3" defer></script>
+<script src="assets/js/app.js?v=20261024-pixel-success-only-1" defer></script>
 </body>
 </html>

@@ -14,3 +14,6 @@ Yeh simple PHP ka instance-local temporary file/session version hai. Vercel /tmp
 No Redis dependency does NOT mean durable storage. Yeh limitation code se permanently fix nahi hoti bina shared backend ke.
 
 UPI/Pixel root setting.php se hi aate hain. Payment browser ke kehne par successful mark nahi hoti; existing server verification remains. Native PhonePe untracked flow automatically success confirm nahi karta.
+
+## Meta Pixel events
+Consent accept hone par ordinary storefront pages: PageView only. Verified thankyou/success route: Purchase only (no PageView), with actual order value, INR, transaction/event ID. Product view, add-to-cart aur checkout se Meta commerce events nahi bheje jaate. Refresh par browser localStorage duplicate Purchase ko rokta hai; browser storage clear/block hone par dedup guarantee nahi. Existing consent choice respected. Pixel setting.php se aata hai. Meta Events Manager ke auto-events ya external GTM tags alag se events bhej sakte hain; un settings ko bhi review karein.
