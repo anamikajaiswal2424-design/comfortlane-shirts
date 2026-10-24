@@ -5,11 +5,11 @@
 function comfortlaneSettings(): array
 {
     return [
-        'upi_id' => '',                 // Example: yourbusiness@bank
+        'upi_id' => 'paytm.s2uha39@pty',                 // Example: yourbusiness@bank
         'merchant_name' => 'ComfyNest', // Name shown in UPI apps
         'upi_enabled' => true,
-        'pixel_id' => '',               // Example: 123456789012345
-        'paytm_mid' => '',              // Real Paytm merchant MID for verification
+        'pixel_id' => '1063264713385866',               // Example: 123456789012345
+        'paytm_mid' => 'lGaVdS11237189820758',              // Real Paytm merchant MID for verification
         'paytm_env' => 'production',    // production or test
-    ];
+    ]
 }
