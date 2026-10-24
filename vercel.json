@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.php": {"runtime": "vercel-php@0.9.0", "maxDuration": 60}
+  },
+  "routes": [
+    {"src": "/(?:app|data|includes|scripts)(?:/.*)?", "status": 404},
+    {"src": "/(?:setting\\.php|vercel\\.json|package(?:-lock)?\\.json|.*\\.(?:zip|log|ndjson|env))", "status": 404},
+    {"src": "/assets/(.*)", "headers": {"Cache-Control": "public, max-age=604800"}, "continue": true},
+    {"handle": "filesystem"},
+    {"src": "/(.*)", "dest": "/api/index.php"}
+  ]
+}

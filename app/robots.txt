@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart.php
+Disallow: /address.php
+Disallow: /payment.php
+Disallow: /summary.php
+Disallow: /success.php
+Disallow: /cart-action.php
+Disallow: /place-order.php
+
+# On Apache, .htaccess adds the deployment-specific sitemap URL.
