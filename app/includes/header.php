@@ -48,7 +48,7 @@ $trackingClientConfig = [
     <title><?= e($pageTitle) ?></title>
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
     <link rel="preconnect" href="https://img-va.myshopline.com" crossorigin>
-    <link rel="stylesheet" href="assets/css/style.css?v=20261023-gallery-3">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261024-simple-payment-1">
     <script>window.ComfyNestTracking = <?= json_encode($trackingClientConfig, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
     <?php if (!empty($structuredData) && is_array($structuredData)): ?><script type="application/ld+json"><?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script><?php endif; ?>
 </head>

@@ -17,27 +17,57 @@ function emptyAnalyticsStore(): array
 
 function appendAnalyticsEvent(array $event): bool
 {
-    try { return cloudAppendEvent($event); }
-    catch (Throwable $error) { error_log('Optional analytics persistence unavailable.'); return false; }
+    $encoded = json_encode($event, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    if ($encoded === false) return false;
+    $handle = fopen(analyticsEventLogPath(), 'ab');
+    if ($handle === false) return false;
+    try {
+        if (!flock($handle, LOCK_EX)) return false;
+        $written = fwrite($handle, $encoded . PHP_EOL);
+        fflush($handle);
+        flock($handle, LOCK_UN);
+        return $written !== false;
+    } finally {
+        fclose($handle);
+    }
 }
 
 function readAnalyticsStore(): array
 {
     $store = emptyAnalyticsStore();
-    $events = cloudCommand(['LRANGE', cloudKey('analytics'), 0, -1]);
+    $legacyPath = analyticsFilePath();
+    if (is_file($legacyPath)) {
+        $json = file_get_contents($legacyPath);
+        $data = $json !== false ? json_decode($json, true) : null;
+        if (is_array($data)) $store = array_merge($store, $data);
+    }
+
+    $path = analyticsEventLogPath();
+    if (!is_file($path)) return $store;
+    $handle = fopen($path, 'rb');
+    if ($handle === false) return $store;
     $locations = [];
-    $purchaseIds = [];
-    foreach ((array) $events as $encoded) {
-        $event = json_decode((string) $encoded, true);
-        if (!is_array($event)) continue;
-        $type = (string) ($event['type'] ?? '');
-        unset($event['type']);
-        if ($type === 'pageview') $store['pageviews'][] = $event;
-        elseif ($type === 'location') $locations[(string) ($event['page_view_id'] ?? '')] = $event;
-        elseif ($type === 'purchase' && !isset($purchaseIds[(string) ($event['id'] ?? '')])) {
-            $store['purchases'][] = $event;
-            $purchaseIds[(string) ($event['id'] ?? '')] = true;
+    $purchaseIds = array_fill_keys(array_filter(array_column((array) $store['purchases'], 'id')), true);
+    try {
+        if (flock($handle, LOCK_SH)) {
+            while (($line = fgets($handle)) !== false) {
+                $event = json_decode(trim($line), true);
+                if (!is_array($event)) continue;
+                $type = (string) ($event['type'] ?? '');
+                unset($event['type']);
+                if ($type === 'pageview') {
+                    $store['pageviews'][] = $event;
+                } elseif ($type === 'location') {
+                    $locations[(string) ($event['page_view_id'] ?? '')] = $event;
+                } elseif ($type === 'purchase' && !isset($purchaseIds[(string) ($event['id'] ?? '')])) {
+                    $store['purchases'][] = $event;
+                    $purchaseIds[(string) ($event['id'] ?? '')] = true;
+                }
+            }
+            flock($handle, LOCK_UN);
         }
+    } finally {
+        fclose($handle);
     }
     foreach ($store['pageviews'] as &$pageview) {
         $location = $locations[(string) ($pageview['id'] ?? '')] ?? null;

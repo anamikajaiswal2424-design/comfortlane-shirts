@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // PHP port of Kitchan's environment-based UPI intents and Paytm status flow.
-require_once dirname(__DIR__, 2) . '/setting.php';
+require_once __DIR__ . '/../setting.php';
 
 function gatewayConfig(): array
 {

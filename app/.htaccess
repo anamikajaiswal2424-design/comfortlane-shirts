@@ -1,0 +1,13 @@
+DirectoryIndex index.php index.html
+Options -Indexes
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
+</IfModule>
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|webp|jpg|jpeg|png|svg|ico)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+    <FilesMatch "\.(zip|ndjson|log|md)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>

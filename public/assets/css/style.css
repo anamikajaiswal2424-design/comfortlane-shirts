@@ -407,3 +407,5 @@ main { padding-bottom: 78px; }
 .gallery-scroll-button:disabled { opacity: .3; cursor: default; }
 .gallery-frame { touch-action: pan-y; }
 @media (prefers-reduced-motion: reduce) { .thumbnail-strip { scroll-behavior: auto; } }
+
+.upi-modal-card [data-upi-cancel][hidden] { display: none; }

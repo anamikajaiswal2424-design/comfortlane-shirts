@@ -13,8 +13,8 @@ try {
     if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Please choose a valid CSV file.');
     }
-    if ((int) ($file['size'] ?? 0) > 3 * 1024 * 1024) {
-        throw new RuntimeException('The CSV is larger than the 3 MB limit.');
+    if ((int) ($file['size'] ?? 0) > 5 * 1024 * 1024) {
+        throw new RuntimeException('The CSV is larger than the 5 MB limit.');
     }
     $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
     if ($extension !== 'csv' || !is_uploaded_file((string) $file['tmp_name'])) {

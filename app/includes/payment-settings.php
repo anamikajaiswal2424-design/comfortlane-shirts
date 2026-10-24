@@ -23,7 +23,8 @@ function loadPaymentSettings(): array
 {
     $defaults = defaultPaymentSettings();
     $path = paymentSettingsPath();
-    $json = cloudReadText($path);
+    if (!is_file($path)) return $defaults;
+    $json = file_get_contents($path);
     $data = $json !== false ? json_decode($json, true) : null;
     return is_array($data) ? array_merge($defaults, $data) : $defaults;
 }
@@ -58,7 +59,7 @@ function savePaymentSettings(array $settings): bool
 {
     $payload = array_merge(loadPaymentSettings(), $settings, ['updated_at' => date(DATE_ATOM)]);
     $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    return $json !== false && cloudWriteText(paymentSettingsPath(), $json) !== false;
+    return $json !== false && file_put_contents(paymentSettingsPath(), $json, LOCK_EX) !== false;
 }
 
 function upiPaymentsReady(array $settings): bool

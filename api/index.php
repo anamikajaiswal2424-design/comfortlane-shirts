@@ -6,8 +6,8 @@ if (PHP_SAPI === 'cli-server' && str_starts_with($path, '/assets/') && !str_cont
 if ($path === '/api/initiate-payment') $path = '/initiate-payment.php';
 if ($path === '/api/verify-payment') $path = '/verify-payment.php';
 if ($path === '/' || $path === '/index.php') $path = '/index.php';
-if ($path === '/PaymentConfirmation') $path = '/PaymentConfirmation.php';
-if ($path === '/PaymentFailed') $path = '/PaymentFailed.php';
+if ($path === '/PaymentConfirmation') $path = '/thankyou.php';
+if ($path === '/PaymentFailed') $path = '/payment-failed.php';
 if ($path === '/admin' || $path === '/admin/') $path = '/admin/index.php';
 if ($path === '/api/index.php') $path = '/index.php';
 // An explicit allowlist prevents PHP source/configuration files being served.
@@ -22,16 +22,16 @@ $allowed = ['index.php','product.php','cart.php','cart-action.php','address.php'
 $route = ltrim($path, '/');
 if (!in_array($route, $allowed, true)) { http_response_code(404); exit('Page not found'); }
 try {
-    require_once $root . '/app/includes/cloud-storage.php';
-    cloudBootstrap();
+    require_once $root . '/api/local-bootstrap.php';
+    $root = localStoreBootstrap($root);
     $_SERVER['SCRIPT_NAME'] = '/' . $route;
     $_SERVER['PHP_SELF'] = '/' . $route;
     chdir($root . '/app');
     require $root . '/app/' . $route;
 } catch (Throwable $error) {
-    error_log('Store request failed: ' . get_class($error));
+    error_log('Store request failed: ' . get_class($error) . ' at ' . basename($error->getFile()) . ':' . $error->getLine());
     http_response_code(503);
     header('Cache-Control: no-store');
     if (session_status() === PHP_SESSION_ACTIVE) session_abort();
-    exit('Store temporarily unavailable. Check the Vercel storage configuration and logs. If you already paid, do not pay again.');
+    exit('Store temporarily unavailable. Please retry later. If you already paid, do not pay again.');
 }

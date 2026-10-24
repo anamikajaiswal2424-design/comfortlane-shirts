@@ -28,7 +28,8 @@ function loadBusinessSettings(): array
 {
     $defaults = defaultBusinessSettings();
     $path = businessSettingsPath();
-    $json = cloudReadText($path);
+    if (!is_file($path)) return $defaults;
+    $json = file_get_contents($path);
     $data = $json !== false ? json_decode($json, true) : null;
     return is_array($data) ? array_merge($defaults, $data) : $defaults;
 }
@@ -36,7 +37,7 @@ function loadBusinessSettings(): array
 function saveBusinessSettings(array $settings): bool
 {
     $json = json_encode(array_merge(defaultBusinessSettings(), $settings), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    return $json !== false && cloudWriteText(businessSettingsPath(), $json) !== false;
+    return $json !== false && file_put_contents(businessSettingsPath(), $json, LOCK_EX) !== false;
 }
 
 function businessReady(array $business): bool

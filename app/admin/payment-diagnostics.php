@@ -17,7 +17,7 @@ $checks = [
     ['Paytm environment', null, $config['PAYTM_ENV'] === 'test' ? 'Staging' : 'Production'],
     ['Paytm verification', null, 'A real merchant-linked order is required for an end-to-end check. No live payment is made by this page.'],
     ['PhonePe native', null, 'Same as Kitchan: opens the app, without automatic payment verification or confirmation.'],
-    ['Order storage', true, 'Orders and sessions use the configured persistent Redis store. No local file writes are required.'],
+    ['Order storage', (is_file(__DIR__ . '/../data/orders.json') ? is_writable(__DIR__ . '/../data/orders.json') : is_writable(__DIR__ . '/../data')), 'data/orders.json must be writable by PHP. Payment confirmation no longer requires MongoDB.'],
 ];
 ?>
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment diagnostics</title>

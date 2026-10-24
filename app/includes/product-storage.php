@@ -8,7 +8,11 @@ function catalogFilePath(): string
 function loadProductCatalog(array $fallback = []): array
 {
     $path = catalogFilePath();
-    $json = cloudReadText($path);
+    if (!is_file($path)) {
+        return $fallback;
+    }
+
+    $json = file_get_contents($path);
     if ($json === false) {
         return $fallback;
     }
@@ -54,7 +58,7 @@ function saveProductCatalog(array $products, array $meta = []): bool
         'products' => array_values($products),
     ];
     $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    return $json !== false && cloudWriteText(catalogFilePath(), $json) !== false;
+    return $json !== false && file_put_contents(catalogFilePath(), $json, LOCK_EX) !== false;
 }
 
 function sortProductCatalog(array $products): array
